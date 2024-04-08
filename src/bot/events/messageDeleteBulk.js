@@ -35,9 +35,11 @@ async function paste (messages, guildID) {
     return `${globalUser.username}#${globalUser.discriminator} (${m.author_id}) | (${globalUser.avatarURL}) | ${new Date(m.ts).toUTCString()}: ${m.content}`
   }).join('\r\n')
   if (pasteString) {
-    sa
-      .post(process.env.PASTE_CREATE_ENDPOINT)
-      .set('Authorization', process.env.PASTE_CREATE_TOKEN)
+    const post = sa.post(process.env.PASTE_CREATE_ENDPOINT)
+    if (!(process.env.PASTE_CREATE_TOKEN === undefined || process.env.PASTE_CREATE_TOKEN === null)) {
+      post.set('Authorization', process.env.PASTE_CREATE_TOKEN)
+    }
+    post
       .set('Content-Type', 'text/plain')
       .send(pasteString || 'An error has occurred while fetching pastes. Please contact the bot author.')
       .end((err, res) => {

@@ -37,9 +37,11 @@ module.exports = {
         }]
       })
     } catch (_) {}
-    sa
-      .post(process.env.PASTE_CREATE_ENDPOINT)
-      .set('Authorization', process.env.PASTE_CREATE_TOKEN)
+    const post = sa.post(process.env.PASTE_CREATE_ENDPOINT)
+    if (!(process.env.PASTE_CREATE_TOKEN === undefined || process.env.PASTE_CREATE_TOKEN === null)) {
+      post.set('Authorization', process.env.PASTE_CREATE_TOKEN)
+    }
+    post
       .set('Content-Type', 'text/plain')
       .send(pasteString || 'No messages were able to be archived')
       .end((err, res) => {

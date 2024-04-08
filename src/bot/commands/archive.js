@@ -7,9 +7,11 @@ module.exports = {
     if (num < 5 || num > 1000) return message.channel.createMessage('That number is invalid! Please provide any number between 5 and 1000 (10,000 if Patreon)')
     message.channel.getMessages({ limit: num }).then(messages => {
       const pasteString = messages.reverse().filter(m => !m.applicationID).map(m => `${m.author.username}#${m.author.discriminator} (${m.author.id}) | ${new Date(m.timestamp).toUTCString()}: ${m.content ? m.content : ''} ${m.embeds.length === 0 ? '' : `| {"embeds": [${m.embeds.map(e => JSON.stringify(e))}]}`} | ${m.attachments.length === 0 ? '' : ` =====> Attachment: ${m.attachments[0].filename}:${m.attachments[0].url}`}`).join('\r\n')
-      sa
-        .post(process.env.PASTE_CREATE_ENDPOINT)
-        .set('Authorization', process.env.PASTE_CREATE_TOKEN)
+      const post = sa.post(process.env.PASTE_CREATE_ENDPOINT)
+      if (!(process.env.PASTE_CREATE_TOKEN === undefined || process.env.PASTE_CREATE_TOKEN === null)) {
+        post.set('Authorization', process.env.PASTE_CREATE_TOKEN)
+      }
+      post
         .set('Content-Type', 'text/plain')
         .send(pasteString || 'No messages were able to be archived')
         .end((err, res) => {
